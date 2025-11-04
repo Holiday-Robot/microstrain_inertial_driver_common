@@ -126,6 +126,12 @@ bool MipPublisherMapping::configure(RosNodeType* config_node)
         MICROSTRAIN_DEBUG(node_, "Not configuring descriptor 0x%02x%02x to stream because it's data rate is set to 0", descriptor_set, field_descriptor);
         continue;
       }
+      if (topic_info.data_rate == DATA_RATE_DO_NOT_STREAM)
+      {
+        MICROSTRAIN_DEBUG(node_, "Not configuring descriptor 0x%02x%02x to stream because it's data rate is set to -1", descriptor_set, field_descriptor);
+        continue;
+      }
+
 
       // If the channel has already been added, just update the rate of the existing entry
       auto existing_descriptor_rate = std::find_if(descriptor_rates.begin(), descriptor_rates.end(), [field_descriptor](const mip::DescriptorRate& d)
@@ -226,6 +232,10 @@ bool MipPublisherMapping::configure(RosNodeType* config_node)
     mip::CmdResult mip_cmd_result;
     const uint8_t descriptor_set = streamed_descriptor_mapping.first;
     const std::vector<mip::DescriptorRate> descriptor_rates = streamed_descriptor_mapping.second;
+    for (const auto& descirptor_rate : descriptor_rates)
+    {
+      MICROSTRAIN_INFO(node_, "Streaming 0x%02x%02x at decimation: %u", descriptor_set, descriptor_rate.descriptor, descriptor_rate.decimation);
+    }
     if (!(mip_cmd_result = mip_device_->writeMessageFormat(descriptor_set, descriptor_rates.size(), descriptor_rates.data())))
     {
       MICROSTRAIN_ERROR(node_, "Failed to write message format for descriptor set 0x%02x", descriptor_set);
