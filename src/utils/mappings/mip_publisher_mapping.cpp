@@ -172,13 +172,15 @@ bool MipPublisherMapping::configure(RosNodeType* config_node)
         return d.descriptor == mip::data_filter::DATA_COMPENSATED_ACCELERATION;
       }
       );
-      mip::DescriptorRate compensated_accel_rate = *compensated_accel_rate_iter;
       if (compensated_accel_rate_iter != descriptor_rates.end())
+      {
+        mip::DescriptorRate compensated_accel_rate = *compensated_accel_rate_iter;
         compensated_accel_rate_iter = descriptor_rates.erase(compensated_accel_rate_iter);
 
-      // Insert the new descriptor rate
-      compensated_accel_rate.descriptor = mip::data_filter::DATA_LINEAR_ACCELERATION;
-      descriptor_rates.insert(compensated_accel_rate_iter, compensated_accel_rate);
+        // Insert the new descriptor rate
+        compensated_accel_rate.descriptor = mip::data_filter::DATA_LINEAR_ACCELERATION;
+        descriptor_rates.insert(compensated_accel_rate_iter, compensated_accel_rate);
+      }
     }
   }
 
